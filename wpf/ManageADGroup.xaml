@@ -13,7 +13,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         WindowStyle="None"
         AllowsTransparency="True"
-        Title="AD Group Manager" MinHeight="500" MinWidth="450" Height="500" Width="445">
+        Title="AD Group Manager" MinHeight="500" Height="500" MinWidth="450" Width="445">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -39,19 +39,30 @@
             </ResourceDictionary.MergedDictionaries>            
         </ResourceDictionary>
     </Window.Resources>
-
-    <Grid Margin="10,10,10,10">
-        <StackPanel>
-            <Label Name="lblGroup" Content="Active Directory Group Members" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-            <DataGrid Name="dgUsers" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" IsReadOnly="true"/>
-            <Button Name="btnRemoveUser" Content="Remove" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
-            <Label Name="lblSearch" Content="Search by email address" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-            <TextBox Name="tbSearch" HorizontalAlignment="Left" Height="28" Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5,0,0,0" Width="250" ToolTip="Search by email address" AutomationProperties.HelpText="Search by email address"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Top">
-                <Button Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Height="30" />
-                <Button Name="btnAddUser" Content="Add" HorizontalAlignment="Left" Margin="20,10,0,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
+    <DockPanel>
+        <materialDesign:ColorZone x:Name="header" Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryMid" DockPanel.Dock="Top">
+            <DockPanel>
+                <Button x:Name="window_close" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" ToolTip="Exit" Height="30" Width="30">
+                    <materialDesign:PackIcon Kind="WindowClose" Height="20" Width="20" />
+                </Button>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignHeadline6TextBlock}">
+                    Manage AD Group
+                </TextBlock>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <Grid Margin="10,10,10,10">
+            <StackPanel>
+                <Label Name="lblGroup" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
+                <DataGrid Name="dgUsers" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" IsReadOnly="true" MaxHeight="300"/>
+                <Button Name="btnRemoveUser" Content="Remove" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
+                <Label Name="lblSearch" Content="Search by email address" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
+                <TextBox Name="tbSearch" HorizontalAlignment="Left" Height="28" Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5,0,0,0" Width="250" ToolTip="Search by email address" AutomationProperties.HelpText="Search by email address"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Top">
+                    <Button Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Height="30" />
+                    <Button Name="btnAddUser" Content="Add" HorizontalAlignment="Left" Margin="20,10,0,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
+                </StackPanel>
+                <Label Name="lblHint" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto" />
             </StackPanel>
-            <Label Name="lblHint" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto" />
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -41,8 +41,7 @@ switch ((Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes
 $PrimaryColor = "Indigo"
 $AccentColor = "Teal"
 
-#XAML form designed using Vistual Studio
-# Read XAML and handle parameter inputs
+# Process XAML
 $inputXML = ""
 foreach ($line in [System.IO.File]::ReadLines("$PSScriptRoot\wpf\ManageADGroup.xaml")) {
     if ("<!-- INSERT RESOURCES IN CODE HERE -->" -eq $line) {
@@ -73,12 +72,28 @@ Catch
 ForEach ($node in $xaml.SelectNodes("//*[@Name]")) {
     $syncHash.($node.Name) = $syncHash.Window.FindName($node.Name)
 }
+
+# Initialize
 $syncHash.PrimaryColor = $PrimaryColor
 $syncHash.AccentColor = $AccentColor
 $syncHash.Theme = $Theme
-#$syncHash.ADGroup = Get-ADGroup $ADGroupName
-#$syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
+$syncHash.ADGroup = Get-ADGroup $ADGroupName
+$syncHash.lblGroup.Content = "Members of $ADGroupName`:"
+$syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
 
+# Title Bar Handlers
+$syncHash.header.Add_MouseDown({ $syncHash.Window.DragMove() })
+$syncHash.header.Add_MouseDoubleClick({
+    if ($syncHash.Window.WindowState -eq [System.Windows.WindowState]::Maximized) {
+        $syncHash.Window.WindowState = [System.Windows.WindowState]::Normal
+    }
+    else {
+        $syncHash.Window.WindowState = [System.Windows.WindowState]::Maximized
+    }
+})
+$syncHash.window_close.Add_Click({ $syncHash.Window.Close();Exit })
+
+# User Action Handlers
 $syncHash.btnSearch.Add_Click({
     try {
         $user = Get-ADUser -Filter "EmailAddress -like `"$($syncHash.tbSearch.Text)`"" -Properties EmailAddress
