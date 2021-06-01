@@ -24,28 +24,40 @@ param(
 
 #Load Assembly and Library
 Add-Type -AssemblyName PresentationFramework
+Add-Type -Path "$PSScriptRoot\wpf\MaterialDesignColors.dll"
+Add-Type -Path "$PSScriptRoot\wpf\MaterialDesignThemes.wpf.dll"
+
+switch ((Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize).AppsUseLightTheme) {
+    0 {
+        $Theme = "Dark"
+    }
+    1 {
+        $Theme = "Light"
+    }
+    default {
+        $Theme = "Light"
+    }
+}
+$PrimaryColor = "Indigo"
+$AccentColor = "Teal"
 
 #XAML form designed using Vistual Studio
-[xml]$inputXML = @"
-<Window 
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        Title="AD Group Manager" Height="500" Width="445" ResizeMode="NoResize">
-    <Grid>
-        <StackPanel>
-            <Label Name="lblGroup" Content="Active Directory Group Members" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-            <DataGrid Name="dgUsers" HorizontalAlignment="Left" Margin="20,10,10,0" VerticalAlignment="Top" MinWidth="380" IsReadOnly="true"/>
-            <Button Name="btnRemoveUser" Content="Remove" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" Width="80" Height="28" IsEnabled="false"/>
-            <Label Name="lblSearch" Content="Search by email address" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Top">
-                <TextBox Name="tbSearch" HorizontalAlignment="Left" Height="28" Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5,0,0,0" Width="201" ToolTip="Search by email address" AutomationProperties.HelpText="Search by email address"/>
-                <Button Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="0,10,10,0" VerticalAlignment="Top" Width="80" Height="28" />
-            </StackPanel>
-            <Button Name="btnAddUser" Content="Add" HorizontalAlignment="Left" Margin="20,10,0,10" VerticalAlignment="Top" Width="80" Height="28" IsEnabled="false"/>
-            <Label Name="lblHint" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto" />
-        </StackPanel>
-    </Grid>
-</Window>
-"@
+# Read XAML and handle parameter inputs
+$inputXML = ""
+foreach ($line in [System.IO.File]::ReadLines("$PSScriptRoot\wpf\ManageADGroup.xaml")) {
+    if ("<!-- INSERT RESOURCES IN CODE HERE -->" -eq $line) {
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.' + $Theme + '.xaml" />' + "`n"
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.' + $PrimaryColor + '.xaml" />' + "`n"
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.' + $AccentColor + '.xaml" />' + "`n"
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />' + "`n"
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />' + "`n"
+        $inputXML += '<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />' + "`n"
+    }
+    else {
+        $inputXML += $line + "`n"
+    }
+}
+$inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:Na",'Na'  -replace '^<Win.*', '<Window'
 
 $syncHash = [hashtable]::Synchronized(@{})
 [xml]$XAML = $inputXML
@@ -61,9 +73,11 @@ Catch
 ForEach ($node in $xaml.SelectNodes("//*[@Name]")) {
     $syncHash.($node.Name) = $syncHash.Window.FindName($node.Name)
 }
-
-$syncHash.ADGroup = Get-ADGroup $ADGroupName
-$syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
+$syncHash.PrimaryColor = $PrimaryColor
+$syncHash.AccentColor = $AccentColor
+$syncHash.Theme = $Theme
+#$syncHash.ADGroup = Get-ADGroup $ADGroupName
+#$syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
 
 $syncHash.btnSearch.Add_Click({
     try {
