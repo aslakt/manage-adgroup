@@ -94,50 +94,70 @@ $syncHash.header.Add_MouseDoubleClick({
 $syncHash.window_close.Add_Click({ $syncHash.Window.Close();Exit })
 
 # User Action Handlers
+$syncHash.tbSearch.Add_KeyDown({
+    if ($_.Key -eq "Return") {
+        $peer = [System.Windows.Automation.Peers.ButtonAutomationPeer]($syncHash.btnSearch)
+        $invokeProv = $peer.GetPattern([System.Windows.Automation.Peers.PatternInterface]::Invoke)
+        $invokeProv.Invoke()
+    }
+})
+
 $syncHash.btnSearch.Add_Click({
     try {
-        $user = Get-ADUser -Filter "EmailAddress -like `"$($syncHash.tbSearch.Text)`"" -Properties EmailAddress
+        $user = Get-ADUser -Filter "EmailAddress -like `"$($syncHash.tbSearch.Text)`"" -Properties EmailAddress, SamAccountName
     }
     catch {
         $syncHash.btnAddUser.IsEnabled = $false
     }
     if ($user.count -lt 1) {
-        $syncHash.lblHint.Content = "Email not found in AD"
+        $syncHash.tbHint.Text = "Email not found in AD"
         $syncHash.btnAddUser.IsEnabled = $false
     }
     elseif ($user.count -gt 1) {
-        $syncHash.lblHint.Content = "More than one email matches your search, please specify"
+        $syncHash.tbHint.Text = "More than one email matches your search, please specify"
         $syncHash.btnAddUser.IsEnabled = $false
     }
     else {
-        $syncHash.lblHint.Content = "Found user: $($user.EmailAddress), click to add"
-        $syncHash.btnAddUser.IsEnabled = $true
+        if ($null -ne (Get-ADGroupMember $ADGroupName | Where-Object -Property SamAccountName -eq $user.SamAccountName)) {
+            $syncHash.tbHint.Text = "That user is already a member of the group."
+            $syncHash.btnAddUser.IsEnabled = $false
+        }
+        else {
+            $syncHash.tbHint.Text = "Found user:`n`n $($user.SamAccountName)`n $($user.EmailAddress)"
+            $syncHash.btnAddUser.IsEnabled = $true
+        }
     }
 })
 
 $syncHash.btnAddUser.Add_Click({
 
     try {
-        $user = Get-ADUser -Filter "EmailAddress -like `"$($syncHash.tbSearch.Text)`"" -Properties EmailAddress
+        $user = Get-ADUser -Filter "EmailAddress -like `"$($syncHash.tbSearch.Text)`"" -Properties EmailAddress, SamAccountName
     }
     catch {
         $syncHash.btnAddUser.IsEnabled = $false
     }
     if ($user.count -lt 1) {
-        $syncHash.lblHint.Content = "Email not found in AD"
+        $syncHash.tbHint.Text = "Email not found in AD"
         $syncHash.btnAddUser.IsEnabled = $false
     }
     elseif ($user.count -gt 1) {
-        $syncHash.lblHint.Content = "More than one email matches your search, please specify"
+        $syncHash.tbHint.Text = "More than one email matches your search, please specify"
         $syncHash.btnAddUser.IsEnabled = $false
     }
     else {
-        $syncHash.tbSearch.Text = ""
-        $syncHash.lblHint.Content = ""
-        $syncHash.btnAddUser.IsEnabled = $false
-        #Write-Host "Adding $($user.EmailAddress)"
-        Add-ADGroupMember -Identity $syncHash.ADGroup -Members $user
-        $syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
+        if ($null -ne (Get-ADGroupMember $ADGroupName | Where-Object -Property SamAccountName -eq $user.SamAccountName)) {
+            $syncHash.tbHint.Text = "That user is already a member of the group."
+            $syncHash.btnAddUser.IsEnabled = $false
+        }
+        else {
+            $syncHash.tbSearch.Text = ""
+            $syncHash.tbHint.Text = ""
+            $syncHash.btnAddUser.IsEnabled = $false
+            #Write-Host "Adding $($user.EmailAddress)"
+            Add-ADGroupMember -Identity $syncHash.ADGroup -Members $user
+            $syncHash.dgUsers.ItemsSource = Get-ADGroup $ADGroupName | Get-ADGroupMember | Get-AdUser -Properties SamAccountName, EmailAddress | Select-Object SamAccountName, EmailAddress
+        }
     }
 })
 
