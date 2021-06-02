@@ -13,6 +13,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         WindowStyle="None"
         AllowsTransparency="True"
+        SnapsToDevicePixels="True"
         Title="AD Group Manager" MinHeight="500" Height="500" MinWidth="800" Width="800">
     <Window.Resources>
         <ResourceDictionary>
@@ -39,36 +40,38 @@
             </ResourceDictionary.MergedDictionaries>            
         </ResourceDictionary>
     </Window.Resources>
-    <DockPanel>
-        <materialDesign:ColorZone x:Name="header" Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryMid" DockPanel.Dock="Top">
-            <DockPanel>
-                <Button x:Name="window_close" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" ToolTip="Exit" Height="30" Width="30">
-                    <materialDesign:PackIcon Kind="WindowClose" Height="20" Width="20" />
-                </Button>
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignHeadline6TextBlock}">
-                    Manage AD Group
-                </TextBlock>
-            </DockPanel>
-        </materialDesign:ColorZone>
-        <Grid Margin="10,10,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="3*" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <Label Name="lblGroup" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-                <DataGrid Name="dgUsers" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" IsReadOnly="true" MaxHeight="300" Width="Auto"/>
-                <Button Name="btnRemoveUser" Content="Remove" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
-            </StackPanel>
-            <StackPanel Grid.Column="1">
-                <Label Name="lblSearch" Content="Add user by email address" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
-                <TextBox Name="tbSearch" HorizontalAlignment="Left" Height="28" Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5,0,0,0" Width="250" ToolTip="Wildcards (*) allowed"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Top">
-                    <Button Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Height="30" />
-                    <Button Name="btnAddUser" Content="Add" HorizontalAlignment="Left" Margin="20,10,0,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
+    <materialDesign:DialogHost x:Name="DialogHost" Identifier="RootDialog" DialogTheme="Inherit">
+        <DockPanel>
+            <materialDesign:ColorZone x:Name="header" Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryMid" DockPanel.Dock="Top">
+                <DockPanel>
+                    <Button x:Name="window_close" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" ToolTip="Exit" Height="30" Width="30">
+                        <materialDesign:PackIcon Kind="WindowClose" Height="20" Width="20" />
+                    </Button>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource MaterialDesignHeadline6TextBlock}">
+                        Manage AD Group
+                    </TextBlock>
+                </DockPanel>
+            </materialDesign:ColorZone>
+            <Grid Margin="10,10,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Label Name="lblGroup" Content="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
+                    <DataGrid Name="dgUsers" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" IsReadOnly="true" MaxHeight="300" Width="Auto"/>
+                    <Button Name="btnRemoveUser" Content="Remove" HorizontalAlignment="Left" Margin="20,10,10,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
                 </StackPanel>
-                <TextBlock Name="tbHint" Text="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto" TextWrapping="Wrap" />
-            </StackPanel>
-        </Grid>
-    </DockPanel>
+                <StackPanel Grid.Column="1">
+                    <Label Name="lblSearch" Content="Add user by email address" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto"/>
+                    <TextBox Name="tbSearch" HorizontalAlignment="Left" Height="28" Margin="10,10,10,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5,0,0,0" Width="250" ToolTip="Wildcards (*) allowed"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0" VerticalAlignment="Top">
+                        <Button Name="btnSearch" Content="Search" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Height="30" />
+                        <Button Name="btnAddUser" Content="Add" HorizontalAlignment="Left" Margin="20,10,0,10" VerticalAlignment="Top" Height="30" IsEnabled="false"/>
+                    </StackPanel>
+                    <TextBlock Name="tbHint" Text="" HorizontalAlignment="Left" Margin="10,10,10,0" VerticalAlignment="Top" Width="Auto" TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+        </DockPanel>
+    </materialDesign:DialogHost>
 </Window>
