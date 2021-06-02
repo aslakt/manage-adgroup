@@ -38,7 +38,6 @@ switch ((Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes
         $Theme = "Light"
     }
 }
-$Theme = "Light"
 $PrimaryColor = "Indigo"
 $AccentColor = "Teal"
 
